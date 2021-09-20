@@ -28,6 +28,17 @@ componentDidMount () {
 }
 
 
+
+shouldComponentUpdate(prevProps,nextState)
+{
+  if (nextState!== prevProps)
+  return true;
+  else
+  return false;
+
+}
+
+
 componentWillUnmount() {
     this.startTimer();
     AppState.removeEventListener('change', this._handleAppStateChange);
@@ -38,6 +49,7 @@ componentWillUnmount() {
    const data = {
      isSessionActive:false,
    };
+   this.setState({isEnabled:false});
    if (isSessionActive === true){
     login(data);
    }
@@ -65,15 +77,17 @@ componentWillUnmount() {
 
   onPressFunction = () => {
     const {login} = this.props;
+    const {isEnabled} = this.state;
     const data = {
-    isSessionActive:true,
+    isSessionActive: isEnabled,
    };
    login(data);
   };
 
-  toggleSwitch = () => {
+  toggleSwitch = async() => {
     const {isEnabled} = this.state;
-    this.setState({isEnabled : !isEnabled});
+    await this.setState({isEnabled : !isEnabled});
+    this.onPressFunction()
   }
 
   render() {
@@ -85,11 +99,11 @@ componentWillUnmount() {
         <Switch
           style = {{fontSize:60,paddingBottom:20}}
           trackColor={{ false: 'grey', true: 'grey' }}
-          thumbColor={isEnabled ? 'green' : 'grey'}
+          thumbColor={isSessionActive ? 'green' : 'grey'}
           onValueChange={this.toggleSwitch}
-          value={isEnabled}
+          value={isSessionActive}
         />
-        {isEnabled ? <Text style = {{ fontSize:18,fontWeight:'bold'}}>The User is loggedIn</Text> : <Text style = {{ fontSize:18,fontWeight:'bold'}}> The User is not LoggedIn</Text>}
+        {isSessionActive ? <Text style = {{ fontSize:18,fontWeight:'bold'}}>Session is Active</Text> : <Text style = {{ fontSize:18,fontWeight:'bold'}}> Session Expired</Text>}
         </View>
       </SafeAreaView>
     );
@@ -100,6 +114,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor:'white'
    },
    });
 
